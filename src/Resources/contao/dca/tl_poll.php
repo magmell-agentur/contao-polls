@@ -11,6 +11,8 @@
  * @license LGPL
  */
 
+use Contao\Image;
+use Contao\Versions;
 use Magmell\Contao\Polls\Poll;
 
 /**
@@ -369,7 +371,7 @@ class tl_poll extends Backend
 			$icon = 'featured_.gif';
 		}
 
-		return '<a href="'.$this->addToUrl($href).'" title="'.specialchars($title).'"'.$attributes.'>'.$this->generateImage($icon, $label).'</a> ';
+		return '<a href="'.$this->addToUrl($href).'" title="'.\Contao\StringUtil::specialchars($title).'"'.$attributes.'>'.Image::getHtml($icon, $label).'</a> ';
 	}
 
 
@@ -377,11 +379,11 @@ class tl_poll extends Backend
 	 * Feature/unfeature a poll
 	 * @param integer
 	 * @param boolean
-	 * @return string
 	 */
 	public function toggleFeatured($intId, $blnVisible)
 	{
-		$this->createInitialVersion('tl_poll', $intId);
+        $objVersions = new Versions('tl_poll', $intId);
+        $objVersions->initialize();
 
 		// Trigger the save_callback
 		if (is_array($GLOBALS['TL_DCA']['tl_poll']['fields']['featured']['save_callback']))
@@ -397,7 +399,8 @@ class tl_poll extends Backend
 		$this->Database->prepare("UPDATE tl_poll SET tstamp=". time() .", featured='" . ($blnVisible ? 1 : '') . "' WHERE id=?")
 					   ->execute($intId);
 
-		$this->createNewVersion('tl_poll', $intId);
+        $objVersions = new Versions('tl_poll', $intId);
+        $objVersions->create();
 	}
 
 
@@ -426,7 +429,7 @@ class tl_poll extends Backend
 			$icon = 'invisible.gif';
 		}
 
-		return '<a href="'.$this->addToUrl($href).'" title="'.specialchars($title).'"'.$attributes.'>'.$this->generateImage($icon, $label).'</a> ';
+		return '<a href="'.$this->addToUrl($href).'" title="'.\Contao\StringUtil::specialchars($title).'"'.$attributes.'>'.Image::getHtml($icon, $label).'</a> ';
 	}
 
 
@@ -437,7 +440,8 @@ class tl_poll extends Backend
 	 */
 	public function toggleVisibility($intId, $blnVisible)
 	{
-		$this->createInitialVersion('tl_poll', $intId);
+        $objVersions = new Versions('tl_poll', $intId);
+        $objVersions->create();
 
 		// Trigger the save_callback
 		if (is_array($GLOBALS['TL_DCA']['tl_poll']['fields']['published']['save_callback']))
@@ -453,6 +457,7 @@ class tl_poll extends Backend
 		$this->Database->prepare("UPDATE tl_poll SET tstamp=". time() .", published='" . ($blnVisible ? 1 : '') . "' WHERE id=?")
 					   ->execute($intId);
 
-		$this->createNewVersion('tl_poll', $intId);
+        $objVersions = new Versions('tl_poll', $intId);
+        $objVersions->create();
 	}
 }

@@ -1,5 +1,7 @@
 <?php
 
+use Contao\Image;
+use Contao\Versions;
 use Magmell\Contao\Polls\Poll;
 
 /**
@@ -256,7 +258,7 @@ class tl_poll_option extends Backend
 			$icon = 'invisible.gif';
 		}
 
-		return '<a href="'.$this->addToUrl($href).'" title="'.specialchars($title).'"'.$attributes.'>'.$this->generateImage($icon, $label).'</a> ';
+		return '<a href="'.$this->addToUrl($href).'" title="'.\Contao\StringUtil::specialchars($title).'"'.$attributes.'>'.Image::getHtml($icon, $label).'</a> ';
 	}
 
 
@@ -267,7 +269,8 @@ class tl_poll_option extends Backend
 	 */
 	public function toggleVisibility($intId, $blnVisible)
 	{
-		$this->createInitialVersion('tl_poll_option', $intId);
+        $objVersions = new Versions('tl_poll_option', $intId);
+        $objVersions->create();
 
 		// Trigger the save_callback
 		if (is_array($GLOBALS['TL_DCA']['tl_poll_option']['fields']['published']['save_callback']))
@@ -283,6 +286,7 @@ class tl_poll_option extends Backend
 		$this->Database->prepare("UPDATE tl_poll_option SET tstamp=". time() .", published='" . ($blnVisible ? 1 : '') . "' WHERE id=?")
 					   ->execute($intId);
 
-		$this->createNewVersion('tl_poll_option', $intId);
+        $objVersions = new Versions('tl_poll_option', $intId);
+        $objVersions->create();
 	}
 }

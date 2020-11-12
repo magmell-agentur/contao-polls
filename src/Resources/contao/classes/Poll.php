@@ -14,6 +14,10 @@
 namespace Magmell\Contao\Polls;
 
 
+use Contao\Database;
+use Contao\StringUtil;
+use Contao\Widget;
+
 /**
  * Provide methods to handle polls.
  */
@@ -154,7 +158,7 @@ class Poll extends \Frontend
 			// Display the form link
 			if ($blnActive && !$blnHasVoted)
 			{
-				$objTemplate->formLink = sprintf('<a href="%s" class="vote_link" title="%s">%s</a>', $this->generatePollUrl('vote'), specialchars($GLOBALS['TL_LANG']['MSC']['showForm']), $GLOBALS['TL_LANG']['MSC']['showForm']);
+				$objTemplate->formLink = sprintf('<a href="%s" class="vote_link" title="%s">%s</a>', $this->generatePollUrl('vote'), StringUtil::specialchars($GLOBALS['TL_LANG']['MSC']['showForm']), $GLOBALS['TL_LANG']['MSC']['showForm']);
 			}
 
 			return $objTemplate->parse();
@@ -176,7 +180,7 @@ class Poll extends \Frontend
 		);
 
 		$doNotSubmit = false;
-		$objWidget = new $GLOBALS['TL_FFL'][$arrField['inputType']]($this->prepareForWidget($arrField, $arrField['name']));
+		$objWidget = new $GLOBALS['TL_FFL'][$arrField['inputType']](Widget::getAttributesFromDca($arrField, $arrField['name']));
 
 		// Override the ID parameter to avoid ID duplicates for radio buttons and labels
 		$objWidget->id = 'poll_' . $this->objPoll->id;
@@ -203,7 +207,7 @@ class Poll extends \Frontend
 		// Display the results link
 		if (($blnActive && !$blnHasVoted && $this->objPoll->active_behaviorNotVoted == 'opt1') || ($blnActive && $blnHasVoted && $this->objPoll->active_behaviorVoted == 'opt2') || (!$blnActive && !$blnHasVoted && $this->objPoll->inactive_behaviorNotVoted == 'opt1') || (!$blnActive && $blnHasVoted && $this->objPoll->inactive_behaviorVoted == 'opt2'))
 		{
-			$objTemplate->resultsLink = sprintf('<a href="%s" class="results_link" title="%s">%s</a>', $this->generatePollUrl('results'), specialchars($GLOBALS['TL_LANG']['MSC']['showResults']), $GLOBALS['TL_LANG']['MSC']['showResults']);
+			$objTemplate->resultsLink = sprintf('<a href="%s" class="results_link" title="%s">%s</a>', $this->generatePollUrl('results'), StringUtil::specialchars($GLOBALS['TL_LANG']['MSC']['showResults']), $GLOBALS['TL_LANG']['MSC']['showResults']);
 		}
 
 		// Add the vote
